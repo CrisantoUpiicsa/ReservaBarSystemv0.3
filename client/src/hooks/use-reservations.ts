@@ -1,6 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import type { Reservation, InsertReservation } from "@shared/schema";
+import { useQuery } from "@tanstack/react-query";
+import type { Reservation } from "@shared/schema";
+
+// Asegúrate de que esta línea ya esté en tu archivo
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export function useReservations(filters?: {
   date?: string;
@@ -15,52 +17,11 @@ export function useReservations(filters?: {
   return useQuery<Reservation[]>({
     queryKey: ["/api/reservations", filters],
     queryFn: async () => {
-      const url = `/api/reservations${queryParams.toString() ? `?${queryParams}` : ""}`;
+      // Modificación aquí: Se añade API_BASE_URL al inicio de la URL
+      const url = `${API_BASE_URL}/api/reservations${queryParams.toString() ? `?${queryParams}` : ""}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error("Failed to fetch reservations");
       return response.json();
-    },
-  });
-}
-
-export function useCreateReservation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (reservation: InsertReservation) => {
-      await apiRequest("POST", "/api/reservations", reservation);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/reservations"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
-    },
-  });
-}
-
-export function useUpdateReservationStatus() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ id, status }: { id: number; status: string }) => {
-      await apiRequest("PATCH", `/api/reservations/${id}/status`, { status });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/reservations"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
-    },
-  });
-}
-
-export function useDeleteReservation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (id: number) => {
-      await apiRequest("DELETE", `/api/reservations/${id}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/reservations"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
     },
   });
 }
