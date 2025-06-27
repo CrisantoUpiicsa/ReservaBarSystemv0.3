@@ -1,7 +1,11 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // Asegúrate de que esta línea esté aquí
-console.log("DEBUG: API_BASE_URL en queryClient:", API_BASE_URL);
+// MODIFICACIÓN CLAVE: Priorizamos process.env.VITE_API_BASE_URL
+// y mantenemos import.meta.env.VITE_API_BASE_URL como fallback.
+const API_BASE_URL = process.env.VITE_API_BASE_URL || import.meta.env.VITE_API_BASE_URL;
+
+// Mantenemos el console.log para verificar el valor después del despliegue.
+console.log("DEBUG: API_BASE_URL en queryClient (después de cambio a process.env):", API_BASE_URL);
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -15,7 +19,7 @@ export async function apiRequest(
   url: string, // Esta 'url' es una ruta relativa como "/api/inventory"
   data?: unknown | undefined,
 ): Promise<Response> {
-  // Modificación aquí: Se añade API_BASE_URL a la 'url'
+  // Se añade API_BASE_URL a la 'url'
   const res = await fetch(`${API_BASE_URL}${url}`, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
@@ -33,7 +37,7 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    // Modificación aquí: Se añade API_BASE_URL al queryKey[0]
+    // Se añade API_BASE_URL al queryKey[0]
     const fullUrl = `${API_BASE_URL}${queryKey[0] as string}`;
     const res = await fetch(fullUrl, {
       credentials: "include",
