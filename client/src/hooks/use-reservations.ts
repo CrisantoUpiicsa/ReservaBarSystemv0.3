@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"; // ¡Asegúrate de importar useMutation y useQueryClient!
-import { apiRequest } from "@/lib/queryClient"; // Importa apiRequest desde queryClient
-import type { Reservation, InsertReservation } from "@shared/schema"; // Asegúrate de importar InsertReservation si no lo haces ya
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import type { Reservation, InsertReservation } from "@shared/schema"; // Asegúrate de que InsertReservation esté importado
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -25,24 +25,36 @@ export function useReservations(filters?: {
   });
 }
 
-// <<< --- AÑADE ESTA FUNCIÓN useCreateReservation --- >>>
 export function useCreateReservation() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (reservation: InsertReservation) => {
-      // apiRequest ya utiliza API_BASE_URL internamente gracias a tu cambio en queryClient.ts
       await apiRequest("POST", "/api/reservations", reservation);
     },
     onSuccess: () => {
-      // Invalida las queries para que se recarguen los datos actualizados de reservas y quizás el dashboard
       queryClient.invalidateQueries({ queryKey: ["/api/reservations"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] }); // Añadido por si afecta al dashboard
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
     },
   });
 }
 
-// Opcional: Si necesitas un hook para eliminar (DELETE) reservas, también lo agregarías aquí.
+// <<< --- AÑADE ESTA FUNCIÓN useUpdateReservationStatus --- >>>
+export function useUpdateReservationStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      // Asumiendo que la API espera un PATCH a /api/reservations/{id}/status
+      await apiRequest("PATCH", `${API_BASE_URL}/api/reservations/${id}/status`, { status });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/reservations"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] }); // Si aplica
+    },
+  });
+}
+
 export function useDeleteReservation() {
     const queryClient = useQueryClient();
 
