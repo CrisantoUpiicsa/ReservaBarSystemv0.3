@@ -36,16 +36,16 @@ jobs:
             return await coredemo.getIDToken()
           result-encoding: string
 
-      # --- ¡PASO DE BUILD PERSONALIZADO AGREGADO AQUÍ! ---
-      # Esto asegura que la variable de entorno se inyecte directamente al proceso de build de Vite
+      # --- ¡PASO DE BUILD PERSONALIZADO - ESTE ES EL ÚNICO LUGAR DONDE DEBE ESTAR! ---
       - name: Build Frontend (Vite)
         run: |
-          npm install # Instala dependencias
+          npm install
+          # Depuración: Ver el valor de la variable en el entorno del build
+          echo "Debug: VITE_API_BASE_URL en build step (parcial): ${VITE_API_BASE_URL:0:10}..."
           # Inyecta VITE_API_BASE_URL directamente al comando npm run build
           VITE_API_BASE_URL="${{ secrets.VITE_API_BASE_URL }}" npm run build
-        working-directory: ./ # Asegúrate de que este sea el directorio donde está tu package.json del frontend
+        working-directory: ./
         env:
-          # También podemos añadirla aquí como extra medida de seguridad
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
 
       - name: Deploy to Azure Static Web Apps
@@ -58,9 +58,8 @@ jobs:
           api_location: "" # Correcto para backend externo
           output_location: "dist/public" # Correcto según los logs de Vite
           github_id_token: ${{ steps.idtoken.outputs.result }}
-          # Eliminamos el bloque 'env' del paso deploy, ya que el build se hace en un paso separado
 
-  close_pull_request_job:
+  close_pull_request_job: # Este job solo debe cerrar el PR, no construir nada
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     name: Close Pull Request Job
