@@ -1,3 +1,4 @@
+# .github/workflows/azure-static-web-apps-black-sea-0e7490b10.yml
 name: Azure Static Web Apps CI/CD
 
 on:
@@ -41,13 +42,16 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BLACK_SEA_0E7490B10 }}
           action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "/" # App source code path - CORRECTO
-          api_location: "" # Api source code path - optional - CORRECTO
-          output_location: "dist/public" # <--- ¡CAMBIADO! Built app content directory - optional
+          app_location: "/"
+          api_location: ""
+          output_location: "dist/public" # Esto ya lo habíamos confirmado por los logs de build
           github_id_token: ${{ steps.idtoken.outputs.result }}
-          ###### End of Repository/Build Configurations ######
+          # --- ¡NUEVA SECCIÓN AGREGADA AQUÍ! ---
+          # Define explícitamente las variables de entorno para el paso de build
+          env:
+            VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }} # Usa el nombre que tienes en Azure Portal
+            AZURE_STATIC_WEB_APPS_API_TOKEN_BLACK_SEA_0E7490B10: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BLACK_SEA_0E7490B10 }}
+          # --- FIN DE LA NUEVA SECCIÓN ---
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
