@@ -1,11 +1,12 @@
 // client/src/lib/queryClient.ts
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-// Usa directamente process.env.VITE_API_BASE_URL
-// Vite debería reemplazar esto con el valor literal en el build
-const API_BASE_URL = process.env.VITE_API_BASE_URL;
+// *** CAMBIO CRÍTICO Y TEMPORAL: QUEMAR LA URL DIRECTAMENTE ***
+// Reemplaza 'https://TU_URL_DE_API_COMPLETA_AQUI/' con la URL REAL de tu backend.
+// Por ejemplo: 'https://reservabarapinew-f8dhd6eufme8fjfu.mexicocentral-01.azurewebsites.net/'
+const API_BASE_URL = 'https://reservabarapinew-f8dhd6eufme8fjfu.mexicocentral-01.azurewebsites.net/'; // ¡PON TU URL AQUÍ!
 
-console.log("DEBUG: API_BASE_URL en queryClient (después de cambio a process.env):", API_BASE_URL);
+console.log("DEBUG: API_BASE_URL en queryClient (DESPUÉS DE QUEMARLA):", API_BASE_URL);
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
