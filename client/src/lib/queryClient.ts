@@ -2,6 +2,7 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 // Usa directamente process.env.VITE_API_BASE_URL
+// Vite debería reemplazar esto con el valor literal en el build
 const API_BASE_URL = process.env.VITE_API_BASE_URL;
 
 console.log("DEBUG: API_BASE_URL en queryClient (después de cambio a process.env):", API_BASE_URL);
