@@ -36,17 +36,22 @@ jobs:
             return await coredemo.getIDToken()
           result-encoding: string
 
-      # --- ¡PASO DE BUILD PERSONALIZADO - ESTE ES EL ÚNICO LUGAR DONDE DEBE ESTAR! ---
       - name: Build Frontend (Vite)
         run: |
           npm install
-          # Depuración: Ver el valor de la variable en el entorno del build
           echo "Debug: VITE_API_BASE_URL en build step (parcial): ${VITE_API_BASE_URL:0:10}..."
-          # Inyecta VITE_API_BASE_URL directamente al comando npm run build
           VITE_API_BASE_URL="${{ secrets.VITE_API_BASE_URL }}" npm run build
         working-directory: ./
         env:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+
+      # --- ¡NUEVO PASO: SUBIR ARTEFACTOS DEL BUILD! ---
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4 # Usa la acción de subir artefactos
+        with:
+          name: frontend-build-output # Nombre del artefacto que podrás descargar
+          path: dist/public # La ruta de la carpeta que queremos subir
+          # optional: retention-days: 5 # Cuántos días guardar el artefacto, opcional
 
       - name: Deploy to Azure Static Web Apps
         id: deploy_swa
@@ -54,12 +59,12 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BLACK_SEA_0E7490B10 }}
           action: "upload"
-          app_location: "/" # Correcto según tu estructura
-          api_location: "" # Correcto para backend externo
-          output_location: "dist/public" # Correcto según los logs de Vite
+          app_location: "/"
+          api_location: ""
+          output_location: "dist/public"
           github_id_token: ${{ steps.idtoken.outputs.result }}
 
-  close_pull_request_job: # Este job solo debe cerrar el PR, no construir nada
+  close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     name: Close Pull Request Job
