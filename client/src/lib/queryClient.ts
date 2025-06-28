@@ -4,7 +4,7 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 // *** CAMBIO CRÍTICO Y TEMPORAL: QUEMAR LA URL DIRECTAMENTE ***
 // Reemplaza 'https://TU_URL_DE_API_COMPLETA_AQUI/' con la URL REAL de tu backend.
 // Por ejemplo: 'https://reservabarapinew-f8dhd6eufme8fjfu.mexicocentral-01.azurewebsites.net/'
-const API_BASE_URL = 'https://reservabarapinew-f8dhd6eufme8fjfu.mexicocentral-01.azurewebsites.net/'; // ¡PON TU URL AQUÍ!
+const API_BASE_URL = 'https://reservabarapinew-f8dhd6eufme8fjfu.mexicocentral-01.azurewebsites.net'; // ¡PON TU URL AQUÍ!
 
 console.log("DEBUG: API_BASE_URL en queryClient (DESPUÉS DE QUEMARLA):", API_BASE_URL);
 
