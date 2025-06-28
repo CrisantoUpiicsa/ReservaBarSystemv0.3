@@ -1,4 +1,3 @@
-# .github/workflows/azure-static-web-apps-black-sea-0e7490b10.yml
 name: Azure Static Web Apps CI/CD
 
 on:
@@ -12,7 +11,7 @@ on:
 
 jobs:
   build_and_deploy_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    if: github.event_name == 'push' || (github.event.action != 'closed' && github.event_name == 'pull_request')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     permissions:
@@ -46,12 +45,11 @@ jobs:
           api_location: ""
           output_location: "dist/public" # Esto ya lo habíamos confirmado por los logs de build
           github_id_token: ${{ steps.idtoken.outputs.result }}
-          # --- ¡NUEVA SECCIÓN AGREGADA AQUÍ! ---
-          # Define explícitamente las variables de entorno para el paso de build
-          env:
-            VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }} # Usa el nombre que tienes en Azure Portal
-            AZURE_STATIC_WEB_APPS_API_TOKEN_BLACK_SEA_0E7490B10: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BLACK_SEA_0E7490B10 }}
-          # --- FIN DE LA NUEVA SECCIÓN ---
+          # --- ¡CORRECCIÓN DE INDENTACIÓN AQUÍ! ---
+          # 'env' debe estar al mismo nivel de indentación que 'azure_static_web_apps_api_token', 'action', etc.
+        env: # <--- Asegúrate que 'env' esté indentado con 6 espacios desde el margen izquierdo
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          AZURE_STATIC_WEB_APPS_API_TOKEN_BLACK_SEA_0E7490B10: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BLACK_SEA_0E7490B10 }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
