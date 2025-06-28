@@ -1,14 +1,13 @@
-// vite.config.ts (en la raíz de tu repositorio, según tu estructura)
+// vite.config.ts (en la raíz de tu repositorio)
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  // Importante para asegurar que VITE_API_BASE_URL sea reconocida
-  envPrefix: 'VITE_',
+  envPrefix: 'VITE_', // Asegura que Vite reconozca las variables que empiezan con VITE_
   define: {
-    // Esto es crucial para que Vite reemplace process.env.VITE_API_BASE_URL
-    // con el valor real en tiempo de build.
+    // Esto instruye a Vite a reemplazar todas las ocurrencias de
+    // process.env.VITE_API_BASE_URL con su valor string literal durante el build
     'process.env.VITE_API_BASE_URL': JSON.stringify(process.env.VITE_API_BASE_URL),
     'process.env': {} // Necesario para que `process.env` esté disponible
   },
@@ -17,7 +16,6 @@ export default defineConfig({
     port: 5173,
   },
   build: {
-    // Esto asegura que la salida vaya a dist/public, como ya sabemos por los logs
-    outDir: 'dist/public',
+    outDir: 'dist/public', // Confirmed from previous logs
   }
 });
